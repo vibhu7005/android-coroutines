@@ -9,11 +9,10 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.techyourchance.coroutines.R
-import com.jordiee.coroutines.common.BaseFragment
-import com.jordiee.coroutines.common.ThreadInfoLogger
-import com.techyourchance.coroutines.exercises.exercise1.GetReputationEndpoint
-import com.techyourchance.coroutines.home.ScreenReachableFromHome
+import com.jordiee.coroutines.R
+import com.jordiee.coroutines.exercises.exercise1.GetReputationEndpoint
+import com.jordiee.coroutines.home.ScreenReachableFromHome
+
 import kotlinx.coroutines.*
 
 class Exercise3SolutionFragment : com.jordiee.coroutines.common.BaseFragment() {

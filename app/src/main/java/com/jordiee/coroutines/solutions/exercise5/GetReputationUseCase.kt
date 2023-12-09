@@ -1,7 +1,7 @@
 package com.jordiee.coroutines.solutions.exercise5
 
 import com.jordiee.coroutines.common.ThreadInfoLogger.logThreadInfo
-import com.techyourchance.coroutines.exercises.exercise1.GetReputationEndpoint
+import com.jordiee.coroutines.exercises.exercise1.GetReputationEndpoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

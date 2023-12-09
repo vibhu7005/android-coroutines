@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
 import androidx.fragment.app.Fragment
-import com.techyourchance.coroutines.R
+import com.jordiee.coroutines.R
 import com.jordiee.coroutines.common.BaseFragment
 
 class HomeFragment : com.jordiee.coroutines.common.BaseFragment(), HomeArrayAdapter.Listener {

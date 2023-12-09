@@ -2,7 +2,7 @@ package com.jordiee.coroutines.solutions.exercise6
 
 import com.jordiee.coroutines.common.ThreadInfoLogger
 import com.jordiee.coroutines.common.ThreadInfoLogger.logThreadInfo
-import com.techyourchance.coroutines.exercises.exercise6.PostBenchmarkResultsEndpoint
+import com.jordiee.coroutines.exercises.exercise6.PostBenchmarkResultsEndpoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.isActive

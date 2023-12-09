@@ -10,12 +10,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.techyourchance.coroutines.R
-import com.jordiee.coroutines.common.BaseFragment
-import com.techyourchance.coroutines.demonstrations.uncaughtexception.LoginUseCaseUncaughtException.*
-import com.techyourchance.coroutines.home.ScreenReachableFromHome
+import com.jordiee.coroutines.R
+import com.jordiee.coroutines.home.ScreenReachableFromHome
 import kotlinx.coroutines.*
-import java.lang.Exception
 
 class UncaughtExceptionDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
 
@@ -71,9 +68,9 @@ class UncaughtExceptionDemoFragment : com.jordiee.coroutines.common.BaseFragment
                         btnLogin.isEnabled = false
                         val result = loginUseCase.logIn(getUsername(), getPassword())
                         when (result) {
-                            is Result.Success -> onUserLoggedIn(result.user)
-                            is Result.InvalidCredentials -> onInvalidCredentials()
-                            is Result.GeneralError -> onGeneralError()
+                            is LoginUseCaseUncaughtException.Result.Success-> onUserLoggedIn(result.user)
+                            is LoginUseCaseUncaughtException.Result.InvalidCredentials -> onInvalidCredentials()
+                            is LoginUseCaseUncaughtException.Result.GeneralError -> onGeneralError()
                         }
                     } finally {
                         refreshUiState()

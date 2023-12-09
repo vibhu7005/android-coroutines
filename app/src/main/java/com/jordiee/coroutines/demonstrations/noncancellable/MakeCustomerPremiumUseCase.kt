@@ -2,7 +2,6 @@ package com.jordiee.coroutines.demonstrations.noncancellable
 
 import com.jordiee.coroutines.common.ThreadInfoLogger
 import com.jordiee.coroutines.common.ThreadInfoLogger.logThreadInfo
-import com.techyourchance.coroutines.exercises.exercise6.PostBenchmarkResultsEndpoint
 import kotlinx.coroutines.*
 
 class MakeCustomerPremiumUseCase(

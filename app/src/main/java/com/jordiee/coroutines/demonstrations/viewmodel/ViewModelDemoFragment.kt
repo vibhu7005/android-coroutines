@@ -9,10 +9,8 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.techyourchance.coroutines.R
-import com.jordiee.coroutines.common.BaseFragment
-import com.jordiee.coroutines.common.ThreadInfoLogger
-import com.techyourchance.coroutines.home.ScreenReachableFromHome
+import com.jordiee.coroutines.R
+import com.jordiee.coroutines.home.ScreenReachableFromHome
 
 class ViewModelDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
 

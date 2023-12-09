@@ -5,9 +5,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.jordiee.coroutines.common.ScreensNavigator
-import com.jordiee.coroutines.common.ToolbarDelegate
-import com.jordiee.coroutines.common.dependencyinjection.ActivityCompositionRoot
+
 
 class MainActivity : AppCompatActivity(), com.jordiee.coroutines.common.ToolbarDelegate {
 
@@ -24,15 +22,15 @@ class MainActivity : AppCompatActivity(), com.jordiee.coroutines.common.ToolbarD
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(com.techyourchance.coroutines.R.layout.activity_main)
+        setContentView(R.layout.activity_main)
 
         screensNavigator = compositionRoot.screensNavigator
         screensNavigator.init(savedInstanceState)
 
-        btnBack = findViewById(com.techyourchance.coroutines.R.id.btn_back)
+        btnBack = findViewById(R.id.btn_back)
         btnBack.setOnClickListener { screensNavigator.navigateUp() }
 
-        txtScreenTitle = findViewById(com.techyourchance.coroutines.R.id.txt_screen_title)
+        txtScreenTitle = findViewById(R.id.txt_screen_title)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

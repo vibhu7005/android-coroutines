@@ -14,9 +14,9 @@ import android.widget.TextView
 
 import java.math.BigInteger
 import androidx.fragment.app.Fragment
-import com.techyourchance.coroutines.R
-import com.jordiee.coroutines.common.BaseFragment
-import com.techyourchance.coroutines.home.ScreenReachableFromHome
+import com.jordiee.coroutines.R
+import com.jordiee.coroutines.home.ScreenReachableFromHome
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel

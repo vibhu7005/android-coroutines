@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import com.techyourchance.coroutines.R
+import com.jordiee.coroutines.R
 
 class HomeArrayAdapter(context: Context, private val listener: Listener) : ArrayAdapter<ScreenReachableFromHome>(context, 0) {
 

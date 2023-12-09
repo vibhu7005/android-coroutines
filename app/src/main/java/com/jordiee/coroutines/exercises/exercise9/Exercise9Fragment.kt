@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.techyourchance.coroutines.R
-import com.jordiee.coroutines.common.BaseFragment
+import com.jordiee.coroutines.R
 import com.jordiee.coroutines.common.ThreadInfoLogger.logThreadInfo
-import com.techyourchance.coroutines.exercises.exercise8.User
-import com.techyourchance.coroutines.home.ScreenReachableFromHome
+import com.jordiee.coroutines.exercises.exercise8.User
+import com.jordiee.coroutines.home.ScreenReachableFromHome
+
 import kotlinx.coroutines.*
 
 class Exercise9Fragment : com.jordiee.coroutines.common.BaseFragment() {
