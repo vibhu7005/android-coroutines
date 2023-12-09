@@ -2,10 +2,10 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    namespace "com.techyourchance.coroutines"
+    namespace "com.jordiee.coroutines"
     compileSdk 33
     defaultConfig {
-        applicationId "com.techyourchance.coroutines"
+        applicationId "com.jordiee.coroutines"
         minSdkVersion 21
         targetSdkVersion 33
         versionCode 1

@@ -8,6 +8,8 @@ import java.math.BigInteger;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 
+import com.jordiee.coroutines.demonstrations.structuredconcurrency.java.FibonacciUseCaseAsync;
+
 public class FibonacciUseCaseAsyncTest {
 
     FibonacciUseCaseAsync.Callback mCallback;

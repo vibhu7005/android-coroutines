@@ -1,5 +1,6 @@
 package com.techyourchance.coroutines.demonstrations.structuredconcurrency.java;
 
+import com.jordiee.coroutines.demonstrations.structuredconcurrency.java.FibonacciUseCaseAsyncUiThreadPoster;
 import com.techyourchance.threadposter.testdoubles.ThreadPostersTestDouble;
 
 import org.junit.Before;
