@@ -1,5 +1,6 @@
 package com.jordiee.coroutines.demonstrations.uithread
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -9,8 +10,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.os.postDelayed
 import androidx.fragment.app.Fragment
 import com.jordiee.coroutines.R
+import com.jordiee.coroutines.common.ThreadInfoLogger.logThreadInfo
 import com.jordiee.coroutines.home.ScreenReachableFromHome
 
 class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
@@ -46,13 +49,15 @@ class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
         val stopTimeNano = System.nanoTime() + benchmarkDurationSeconds * 1_000_000_000L
 
         var iterationsCount: Long = 0
-        while (System.nanoTime() < stopTimeNano) {
-            iterationsCount++
-        }
-
-        logThreadInfo("benchmark completed")
-
-        Toast.makeText(requireContext(), "$iterationsCount", Toast.LENGTH_SHORT).show()
+        Thread {
+            while (System.nanoTime() < stopTimeNano) {
+                iterationsCount++
+            }
+            logThreadInfo("benchmark completed")
+            activity?.runOnUiThread {
+                Toast.makeText(requireContext(), "$iterationsCount", Toast.LENGTH_SHORT).show()
+            }
+        }.start()
     }
 
     private fun updateRemainingTime(remainingTimeSeconds: Int) {
