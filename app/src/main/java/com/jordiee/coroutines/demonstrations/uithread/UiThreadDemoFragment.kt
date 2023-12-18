@@ -43,8 +43,7 @@ class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
                 logThreadInfo("button callback")
                 btnStart.isEnabled = false
                 updateRemainingTime(5)
-                val iterationsCount = 0L
-                executeBenchmark(iterationsCount)
+                val iterationsCount = executeBenchmark()
                 Toast.makeText(requireContext(), "$iterationsCount", Toast.LENGTH_SHORT).show()
                 btnStart.isEnabled = true
             }
@@ -52,7 +51,7 @@ class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
         return view
     }
 
-    private suspend fun executeBenchmark(iterationsCount : Long) {
+    private suspend fun executeBenchmark() : Long {
         val benchmarkDurationSeconds = 5
         return withContext(Dispatchers.Default) {
             logThreadInfo("benchmark started")
@@ -62,8 +61,7 @@ class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
                 iterationsCount++
             }
             logThreadInfo("benchmark completed")
-            withContext(Dispatchers.Main) {
-            }
+           iterationsCount
         }
     }
 
