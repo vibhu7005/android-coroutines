@@ -15,6 +15,10 @@ import androidx.fragment.app.Fragment
 import com.jordiee.coroutines.R
 import com.jordiee.coroutines.common.ThreadInfoLogger.logThreadInfo
 import com.jordiee.coroutines.home.ScreenReachableFromHome
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
 
@@ -22,42 +26,45 @@ class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
 
     private lateinit var btnStart: Button
     private lateinit var txtRemainingTime: TextView
+    private lateinit var coroutine: CoroutineScope
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_loop_iterations_demo, container, false)
-
+        coroutine = CoroutineScope(Dispatchers.Main.immediate)
         txtRemainingTime = view.findViewById(R.id.txt_remaining_time)
 
         btnStart = view.findViewById(R.id.btn_start)
         btnStart.setOnClickListener {
-            logThreadInfo("button callback")
-            btnStart.isEnabled = false
-            executeBenchmark()
-            btnStart.isEnabled = true
+            coroutine.launch {
+                logThreadInfo("button callback")
+                btnStart.isEnabled = false
+                updateRemainingTime(5)
+                val iterationsCount = 0L
+                executeBenchmark(iterationsCount)
+                Toast.makeText(requireContext(), "$iterationsCount", Toast.LENGTH_SHORT).show()
+                btnStart.isEnabled = true
+            }
         }
-
         return view
     }
 
-    private fun executeBenchmark() {
+    private suspend fun executeBenchmark(iterationsCount : Long) {
         val benchmarkDurationSeconds = 5
-
-        updateRemainingTime(benchmarkDurationSeconds)
-
-        logThreadInfo("benchmark started")
-
-        val stopTimeNano = System.nanoTime() + benchmarkDurationSeconds * 1_000_000_000L
-
-        var iterationsCount: Long = 0
-        Thread {
+        return withContext(Dispatchers.Default) {
+            logThreadInfo("benchmark started")
+            val stopTimeNano = System.nanoTime() + benchmarkDurationSeconds * 1_000_000_000L
+            var iterationsCount: Long = 0
             while (System.nanoTime() < stopTimeNano) {
                 iterationsCount++
             }
             logThreadInfo("benchmark completed")
-            activity?.runOnUiThread {
-                Toast.makeText(requireContext(), "$iterationsCount", Toast.LENGTH_SHORT).show()
+            withContext(Dispatchers.Main) {
             }
-        }.start()
+        }
     }
 
     private fun updateRemainingTime(remainingTimeSeconds: Int) {
