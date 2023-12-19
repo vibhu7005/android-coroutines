@@ -13,12 +13,15 @@ import com.jordiee.coroutines.exercises.exercise1.GetReputationEndpoint
 import com.jordiee.coroutines.home.ScreenReachableFromHome
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class Exercise2Fragment : com.jordiee.coroutines.common.BaseFragment() {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main.immediate)
+    private var job : Job? = null
 
     override val screenTitle get() = ScreenReachableFromHome.EXERCISE_2.description
 
@@ -49,7 +52,7 @@ class Exercise2Fragment : com.jordiee.coroutines.common.BaseFragment() {
         btnGetReputation = view.findViewById(R.id.btn_get_reputation)
         btnGetReputation.setOnClickListener {
             logThreadInfo("button callback")
-            coroutineScope.launch {
+            job = coroutineScope.launch {
                 btnGetReputation.isEnabled = false
                 val reputation = getReputationForUser(edtUserId.text.toString())
                 Toast.makeText(requireContext(), "reputation: $reputation", Toast.LENGTH_SHORT).show()
@@ -58,6 +61,14 @@ class Exercise2Fragment : com.jordiee.coroutines.common.BaseFragment() {
         }
 
         return view
+    }
+
+    override fun onStop() {
+        super.onStop()
+        job?.let {
+//           it.cancel()
+            btnGetReputation.isEnabled = true
+        }
     }
 
     private suspend fun getReputationForUser(userId: String): Int {
