@@ -16,6 +16,8 @@ import com.jordiee.coroutines.home.ScreenReachableFromHome
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable.cancel
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -28,13 +30,10 @@ class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
     private lateinit var btnStart: Button
     private lateinit var txtRemainingTime: TextView
     private lateinit var coroutine: CoroutineScope
-    private var jobCounter: Job? = null
-    private var jobTimer : Job? = null
+    private var actionInitiated = false
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_loop_iterations_demo, container, false)
         coroutine = CoroutineScope(Dispatchers.Main.immediate)
@@ -42,11 +41,12 @@ class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
 
         btnStart = view.findViewById(R.id.btn_start)
         btnStart.setOnClickListener {
+            actionInitiated = true
             val benchmarkDurationSeconds = 5
-           jobTimer =  coroutine.launch {
+            coroutine.launch {
                 updateRemainingTime(benchmarkDurationSeconds)
             }
-           jobCounter =  coroutine.launch {
+            coroutine.launch {
                 logThreadInfo("button callback")
                 btnStart.isEnabled = false
                 val iterationsCount = executeBenchmark(benchmarkDurationSeconds)
@@ -72,13 +72,11 @@ class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
 
     override fun onStop() {
         super.onStop()
-        jobCounter?.apply {
-            cancel()
+        coroutine.coroutineContext.cancelChildren()
+        if (actionInitiated) {
+            btnStart.isEnabled = true
+            txtRemainingTime.text = "done"
         }
-        jobTimer?.apply {
-            cancel()
-        }
-
     }
 
     private suspend fun updateRemainingTime(remainingTimeSeconds: Int) {
