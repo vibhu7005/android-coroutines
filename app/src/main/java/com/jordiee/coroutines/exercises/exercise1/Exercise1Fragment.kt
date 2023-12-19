@@ -11,7 +11,14 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.jordiee.coroutines.R
+import com.jordiee.coroutines.common.ThreadInfoLogger
+import com.jordiee.coroutines.common.ThreadInfoLogger.logThreadInfo
 import com.jordiee.coroutines.home.ScreenReachableFromHome
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 
 
 class Exercise1Fragment : com.jordiee.coroutines.common.BaseFragment() {
@@ -45,20 +52,22 @@ class Exercise1Fragment : com.jordiee.coroutines.common.BaseFragment() {
         btnGetReputation = view.findViewById(R.id.btn_get_reputation)
         btnGetReputation.setOnClickListener {
             logThreadInfo("button callback")
-            btnGetReputation.isEnabled = false
-            getReputationForUser(edtUserId.text.toString())
-            btnGetReputation.isEnabled = true
+            CoroutineScope(Dispatchers.Main.immediate).launch {
+                btnGetReputation.isEnabled = false
+                val reputation = getReputationForUser(edtUserId.text.toString())
+                Toast.makeText(requireContext(), "reputation: $reputation", Toast.LENGTH_SHORT).show()
+                btnGetReputation.isEnabled = true
+            }
         }
 
         return view
     }
 
-    private fun getReputationForUser(userId: String) {
-        logThreadInfo("getReputationForUser()")
-
-        val reputation = getReputationEndpoint.getReputation(userId)
-
-        Toast.makeText(requireContext(), "reputation: $reputation", Toast.LENGTH_SHORT).show()
+    private suspend fun getReputationForUser(userId: String) : Int {
+        return withContext(Dispatchers.Default) {
+            logThreadInfo("getReputationForUser()")
+            getReputationEndpoint.getReputation(userId)
+        }
     }
 
     private fun logThreadInfo(message: String) {

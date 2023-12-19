@@ -17,6 +17,8 @@ import com.jordiee.coroutines.common.ThreadInfoLogger.logThreadInfo
 import com.jordiee.coroutines.home.ScreenReachableFromHome
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -40,9 +42,11 @@ class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
         btnStart = view.findViewById(R.id.btn_start)
         btnStart.setOnClickListener {
             coroutine.launch {
+                updateRemainingTime(5)
+            }
+            coroutine.launch {
                 logThreadInfo("button callback")
                 btnStart.isEnabled = false
-                updateRemainingTime(5)
                 val iterationsCount = executeBenchmark()
                 Toast.makeText(requireContext(), "$iterationsCount", Toast.LENGTH_SHORT).show()
                 btnStart.isEnabled = true
@@ -51,7 +55,7 @@ class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
         return view
     }
 
-    private suspend fun executeBenchmark() : Long {
+    private suspend fun executeBenchmark(): Long {
         val benchmarkDurationSeconds = 5
         return withContext(Dispatchers.Default) {
             logThreadInfo("benchmark started")
@@ -61,22 +65,23 @@ class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
                 iterationsCount++
             }
             logThreadInfo("benchmark completed")
-           iterationsCount
+            iterationsCount
         }
     }
 
-    private fun updateRemainingTime(remainingTimeSeconds: Int) {
+    private suspend fun updateRemainingTime(remainingTimeSeconds: Int) {
         logThreadInfo("updateRemainingTime: $remainingTimeSeconds seconds")
-
-        if (remainingTimeSeconds > 0) {
-            txtRemainingTime.text = "$remainingTimeSeconds seconds remaining"
-            Handler(Looper.getMainLooper()).postDelayed({
-                updateRemainingTime(remainingTimeSeconds - 1)
-            }, 1000)
-        } else {
+        var remainingTime = remainingTimeSeconds
+        while (remainingTime > 0) {
+            withContext(Dispatchers.Main.immediate) {
+                txtRemainingTime.text = "$remainingTime seconds remaining"
+            }
+            delay(1000)
+            remainingTime -= 1
+        }
+        withContext(Dispatchers.Main.immediate) {
             txtRemainingTime.text = "done!"
         }
-
     }
 
     private fun logThreadInfo(message: String) {
