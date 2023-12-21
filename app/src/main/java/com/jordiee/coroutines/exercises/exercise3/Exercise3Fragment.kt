@@ -13,6 +13,8 @@ import com.jordiee.coroutines.R
 import com.jordiee.coroutines.exercises.exercise1.GetReputationEndpoint
 import com.jordiee.coroutines.home.ScreenReachableFromHome
 import kotlinx.coroutines.*
+import java.util.concurrent.TimeUnit
+import kotlin.system.measureTimeMillis
 
 class Exercise3Fragment : com.jordiee.coroutines.common.BaseFragment() {
 
@@ -34,14 +36,18 @@ class Exercise3Fragment : com.jordiee.coroutines.common.BaseFragment() {
         getReputationEndpoint = compositionRoot.getReputationEndpoint
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_exercise_3, container, false)
 
         txtElapsedTime = view.findViewById(R.id.txt_elapsed_time)
 
         edtUserId = view.findViewById(R.id.edt_user_id)
         edtUserId.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 btnGetReputation.isEnabled = !s.isNullOrEmpty()
@@ -53,20 +59,24 @@ class Exercise3Fragment : com.jordiee.coroutines.common.BaseFragment() {
         btnGetReputation = view.findViewById(R.id.btn_get_reputation)
         btnGetReputation.setOnClickListener {
             logThreadInfo("button callback")
-            job = coroutineScope.launch {
+            coroutineScope.launch {
                 btnGetReputation.isEnabled = false
-                val reputation = getReputationForUser(edtUserId.text.toString())
-                Toast.makeText(requireContext(), "reputation: $reputation", Toast.LENGTH_SHORT).show()
+                val reputation: Int
+                val execTime = measureTimeMillis {
+                    reputation = getReputationForUser(edtUserId.text.toString())
+                }
+                Toast.makeText(requireContext(), "reputation: $reputation", Toast.LENGTH_SHORT)
+                    .show()
                 btnGetReputation.isEnabled = true
+                txtElapsedTime.text = (execTime).toString()
             }
         }
-
         return view
     }
 
     override fun onStop() {
         super.onStop()
-        job?.cancel()
+        coroutineScope.coroutineContext.cancelChildren()
         btnGetReputation.isEnabled = true
     }
 
