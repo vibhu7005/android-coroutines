@@ -44,6 +44,11 @@ class MyViewModel: ViewModel() {
         viewModelScope.coroutineContext.cancelChildren()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.coroutineContext.cancelChildren()
+    }
+
     private fun logThreadInfo(message: String) {
         com.jordiee.coroutines.common.ThreadInfoLogger.logThreadInfo(message)
     }
