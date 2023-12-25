@@ -1,16 +1,17 @@
 package com.jordiee.coroutines.demonstrations.structuredconcurrency.kotlin
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class FibonacciUseCase {
+class FibonacciUseCase(val coroutineBackgroundDispatcher : CoroutineDispatcher) {
     interface Callback {
         fun onResultObtained(res : Int)
     }
 
     fun calcFibonacci(num: Int, callback: Callback ) {
-        CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(coroutineBackgroundDispatcher).launch {
              callback.onResultObtained(calc(num))
         }
     }

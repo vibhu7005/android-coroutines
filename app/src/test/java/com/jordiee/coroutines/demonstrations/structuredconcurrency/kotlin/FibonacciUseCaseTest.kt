@@ -20,7 +20,7 @@ class FibonacciUseCaseTest {
     @Before
     fun setup() {
         Dispatchers.setMain(TestCoroutineDispatcher())
-        fibonacciUseCase = FibonacciUseCase()
+        fibonacciUseCase = FibonacciUseCase(testCoroutineDispatcher)
         callback = object : FibonacciUseCase.Callback {
             override fun onResultObtained(res: Int) {
                 result = res
