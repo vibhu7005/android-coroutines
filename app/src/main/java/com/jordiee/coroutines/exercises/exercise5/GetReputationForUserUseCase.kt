@@ -1,0 +1,15 @@
+package com.jordiee.coroutines.exercises.exercise5
+
+import com.jordiee.coroutines.common.ThreadInfoLogger.logThreadInfo
+import com.jordiee.coroutines.exercises.exercise1.GetReputationEndpoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+class GetReputationForUserUseCase(private val getReputationEndpoint: GetReputationEndpoint) {
+     suspend fun getReputationForUser(userId: String): Int {
+        return withContext(Dispatchers.Default) {
+            logThreadInfo("getReputationForUser()")
+            getReputationEndpoint.getReputation(userId)
+        }
+    }
+}

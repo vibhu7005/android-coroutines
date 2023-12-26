@@ -30,7 +30,7 @@ class FactorialUseCase {
 
     }
 
-    private fun getComputationRanges(factorialArgument: Int) : Array<ComputationRange> {
+    private suspend fun getComputationRanges(factorialArgument: Int) : Array<ComputationRange> {
         val numberOfThreads = getNumberOfThreads(factorialArgument)
 
         val threadsComputationRanges = Array(numberOfThreads) { ComputationRange(0, 0) }
@@ -48,7 +48,7 @@ class FactorialUseCase {
         }
 
         // add potentially "remaining" values to first thread's range
-        //threadsComputationRanges[0] = ComputationRange(1, threadsComputationRanges[0].end)
+        threadsComputationRanges[0] = ComputationRange(1, threadsComputationRanges[0].end)
 
         return threadsComputationRanges
     }
@@ -68,7 +68,7 @@ class FactorialUseCase {
         }
     }
 
-    private fun CoroutineScope.computeProductForRangeAsync(computationRange: ComputationRange) : Deferred<BigInteger> = async(Dispatchers.IO) {
+    private suspend fun CoroutineScope.computeProductForRangeAsync(computationRange: ComputationRange) : Deferred<BigInteger> = async(Dispatchers.IO) {
         val rangeStart = computationRange.start
         val rangeEnd = computationRange.end
 

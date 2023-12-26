@@ -13,6 +13,7 @@ import com.jordiee.coroutines.demonstrations.uncaughtexception.LoginUseCaseUncau
 import com.jordiee.coroutines.demonstrations.uncaughtexception.UserStateManager
 import com.jordiee.coroutines.exercises.exercise1.GetReputationEndpoint
 import com.jordiee.coroutines.exercises.exercise4.FactorialUseCase
+import com.jordiee.coroutines.exercises.exercise5.GetReputationForUserUseCase
 import com.jordiee.coroutines.exercises.exercise6.Exercise6BenchmarkUseCase
 import com.jordiee.coroutines.exercises.exercise6.PostBenchmarkResultsEndpoint
 import com.jordiee.coroutines.exercises.exercise8.FetchAndCacheUsersUseCase
@@ -55,6 +56,8 @@ class ActivityCompositionRoot(
     private val userStateManager get() = UserStateManager()
 
     val getReputationEndpoint get() = GetReputationEndpoint()
+
+    val getReputationForUserUseCase get() = GetReputationForUserUseCase(getReputationEndpoint)
 
     val factorialUseCase get() = FactorialUseCase()
 
