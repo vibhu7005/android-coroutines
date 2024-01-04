@@ -43,14 +43,25 @@ class Exercise6Fragment : com.jordiee.coroutines.common.BaseFragment() {
             val benchmarkDurationSeconds = 5
 
             coroutineScope.launch {
-                updateRemainingTime(benchmarkDurationSeconds)
+                try {
+                    updateRemainingTime(benchmarkDurationSeconds)
+                } catch (exception : CancellationException) {
+                    txtRemainingTime.text = "done!"
+                }
             }
 
             coroutineScope.launch {
-                btnStart.isEnabled = false
-                val iterationsCount = benchmarkUseCase.executeBenchmark(benchmarkDurationSeconds)
-                Toast.makeText(requireContext(), "$iterationsCount", Toast.LENGTH_SHORT).show()
-                btnStart.isEnabled = true
+                try {
+                    btnStart.isEnabled = false
+                    val iterationsCount =
+                        benchmarkUseCase.executeBenchmark(benchmarkDurationSeconds)
+                    Toast.makeText(requireContext(), "$iterationsCount", Toast.LENGTH_SHORT).show()
+                    btnStart.isEnabled = true
+                } catch (exception : CancellationException) {
+                    logThreadInfo("benchmark cancelled")
+                    Toast.makeText(requireContext(), "benchmark cancelled", Toast.LENGTH_SHORT).show()
+                    btnStart.isEnabled = true
+                }
             }
 
             hasBenchmarkBeenStartedOnce = true
@@ -63,10 +74,6 @@ class Exercise6Fragment : com.jordiee.coroutines.common.BaseFragment() {
         logThreadInfo("onStop()")
         super.onStop()
         coroutineScope.coroutineContext.cancelChildren()
-        if (hasBenchmarkBeenStartedOnce) {
-            btnStart.isEnabled = true
-            txtRemainingTime.text = "done!"
-        }
     }
 
 
