@@ -13,12 +13,14 @@ import androidx.fragment.app.Fragment
 import com.jordiee.coroutines.R
 import com.jordiee.coroutines.common.ThreadInfoLogger.logThreadInfo
 import com.jordiee.coroutines.home.ScreenReachableFromHome
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable.cancel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.Thread.sleep
@@ -30,7 +32,6 @@ class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
     private lateinit var btnStart: Button
     private lateinit var txtRemainingTime: TextView
     private lateinit var coroutine: CoroutineScope
-    private var actionInitiated = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -41,17 +42,27 @@ class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
 
         btnStart = view.findViewById(R.id.btn_start)
         btnStart.setOnClickListener {
-            actionInitiated = true
             val benchmarkDurationSeconds = 5
             coroutine.launch {
-                updateRemainingTime(benchmarkDurationSeconds)
+                try {
+                    updateRemainingTime(benchmarkDurationSeconds)
+                } catch (exception: CancellationException) {
+                    logThreadInfo("coroutine cancelled")
+                    txtRemainingTime.text = "done"
+                }
             }
+
             coroutine.launch {
-                logThreadInfo("button callback")
-                btnStart.isEnabled = false
-                val iterationsCount = executeBenchmark(benchmarkDurationSeconds)
-                Toast.makeText(requireContext(), "$iterationsCount", Toast.LENGTH_SHORT).show()
-                btnStart.isEnabled = true
+                try {
+                    logThreadInfo("button callback")
+                    btnStart.isEnabled = false
+                    val iterationsCount = executeBenchmark(benchmarkDurationSeconds)
+                    Toast.makeText(requireContext(), "$iterationsCount", Toast.LENGTH_SHORT).show()
+                    btnStart.isEnabled = true
+                } catch (exception: CancellationException) {
+                    logThreadInfo("coroutine cancelled")
+                    btnStart.isEnabled = true
+                }
             }
         }
         return view
@@ -62,7 +73,7 @@ class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
             logThreadInfo("benchmark started")
             val stopTimeNano = System.nanoTime() + benchmarkDurationSeconds * 1_000_000_000L
             var iterationsCount: Long = 0
-            while (System.nanoTime() < stopTimeNano) {
+            while (System.nanoTime() < stopTimeNano && isActive) {
                 iterationsCount++
             }
             logThreadInfo("benchmark completed")
@@ -71,12 +82,9 @@ class UiThreadDemoFragment : com.jordiee.coroutines.common.BaseFragment() {
     }
 
     override fun onStop() {
+        logThreadInfo("on Stop called")
         super.onStop()
         coroutine.coroutineContext.cancelChildren()
-        if (actionInitiated) {
-            btnStart.isEnabled = true
-            txtRemainingTime.text = "done"
-        }
     }
 
     private suspend fun updateRemainingTime(remainingTimeSeconds: Int) {
