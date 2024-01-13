@@ -2,6 +2,8 @@ package com.jordiee.coroutines.demonstrations.structuredconcurrency.kotlin
 
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.jordiee.coroutines.common.TestUtils.printCoroutineScopeInfo
+import com.jordiee.coroutines.common.TestUtils.printJobsHierarchy
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,6 +15,7 @@ import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withContext
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert
@@ -88,6 +91,35 @@ class FibonacciUseCaseUiCoroutinesTest {
             }
             job.join()
             println("test completed")
+        }
+    }
+
+    @Test
+    fun coroutine_context_mechanics_testCase() {
+        runBlocking {
+            val jobScope = Job()
+            val scope =
+                CoroutineScope(jobScope + CoroutineName("jordiee Coroutine") + Dispatchers.IO)
+            scope.printCoroutineScopeInfo()
+            val job = scope.launch(CoroutineName("Jordiee2 Coroutine")) {
+                this.printCoroutineScopeInfo()
+                delay(100)
+                withContext(CoroutineName("Jordiee3 Coroutine")) {
+                    this.printCoroutineScopeInfo()
+                    delay(200)
+                    println("jordiee 3 job performed")
+                    withContext(CoroutineName("Jordiee 4 Coroutine")) {
+                        delay(100)
+                        println("Jordiee 4 job performed")
+                        printJobsHierarchy(jobScope)
+                    }
+                }
+
+
+                println("jordiee 2 job performed")
+            }
+            job.join()
+            println("jordiee completed")
         }
     }
 
