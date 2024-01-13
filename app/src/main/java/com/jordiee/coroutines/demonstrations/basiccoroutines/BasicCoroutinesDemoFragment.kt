@@ -1,5 +1,6 @@
 package com.jordiee.coroutines.demonstrations.basiccoroutines
 
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,9 +12,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.jordiee.coroutines.R
+import com.jordiee.coroutines.common.ThreadInfoLogger.logThreadInfo
 import com.jordiee.coroutines.home.ScreenReachableFromHome
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -44,7 +47,17 @@ class BasicCoroutinesDemoFragment : com.jordiee.coroutines.common.BaseFragment()
 
         }
 
+        callCoroutine()
+
         return view
+    }
+
+    fun callCoroutine() {
+        CoroutineScope(Dispatchers.Default).launch {
+            delay(100)
+            Toast.makeText(requireContext(), "hello", Toast.LENGTH_SHORT).show()
+        }
+        Toast.makeText(requireContext(), "hello, jordiee", Toast.LENGTH_SHORT).show()
     }
 
     private suspend fun executeBenchmark(): Long {
