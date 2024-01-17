@@ -26,6 +26,26 @@ class CancellationOnExceptionDemoTest {
         Thread.sleep(100)
         println("test completed")
     }
+    @Test
+    fun testCoroutineHierarchy() {
+        runBlocking {
+            val scope = CoroutineScope(Dispatchers.IO + CoroutineName("Jordiee"))
+            println(scope)
+            println(scope.coroutineContext)
+            println(scope.coroutineContext[Job])
+            val job = scope.launch {
+                println(this)
+                println(this.coroutineContext)
+                println(this.coroutineContext[Job])
+                withContext(Dispatchers.Default) {
+                    println(this)
+                    println(this.coroutineContext)
+                    println(this.coroutineContext[Job])
+                }
+            }
+            job.join()
+        }
+    }
 
     @Test
     fun uncaughtExceptionInConcurrentCoroutines() {
