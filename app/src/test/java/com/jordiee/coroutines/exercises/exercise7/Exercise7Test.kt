@@ -1,5 +1,6 @@
 package com.jordiee.coroutines.exercises.exercise7
 
+import androidx.annotation.RestrictTo
 import com.jordiee.coroutines.common.TestUtils
 import com.jordiee.coroutines.common.TestUtils.printCoroutineScopeInfo
 import com.jordiee.coroutines.common.TestUtils.printJobsHierarchy
@@ -138,6 +139,44 @@ class Exercise7Test {
             }
             job.join()
             println("test done")
+        }
+    }
+
+    @Test
+    fun testNonCancellable() {
+        runBlocking {
+            val job = Job()
+            val jobScope = CoroutineScope(job)
+            val actionJob = jobScope.launch {
+                try {
+                    delay(100)
+                    withContext(Dispatchers.Default) {
+                        try {
+                            delay(100)
+                            withContext(NonCancellable + Dispatchers.IO) {
+                                try {
+                                    delay(100)
+                                    println("Non cancellable job completed")
+                                } catch (ex: CancellationException) {
+                                    println("it will never execute")
+                                }
+                            }
+//                            delay(1)
+                            println("internal job completed")
+                        } catch (ex: CancellationException) {
+                            println("internal job cancelled")
+                        }
+                    }
+                    println("outer job completed")
+                } catch (ex: CancellationException) {
+                    println("outer job cancelled")
+                }
+            }
+            jobScope.launch {
+                delay(210)
+                jobScope.cancel()
+            }
+            actionJob.join()
         }
     }
 
