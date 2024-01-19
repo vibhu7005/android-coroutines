@@ -11,6 +11,7 @@ import com.jordiee.coroutines.R
 import com.jordiee.coroutines.common.ThreadInfoLogger.logThreadInfo
 import com.jordiee.coroutines.home.ScreenReachableFromHome
 import kotlinx.coroutines.*
+import kotlinx.coroutines.NonCancellable.isActive
 
 class Exercise8Fragment : com.jordiee.coroutines.common.BaseFragment() {
 
@@ -30,7 +31,11 @@ class Exercise8Fragment : com.jordiee.coroutines.common.BaseFragment() {
         fetchAndCacheUsersUseCase = compositionRoot.fetchAndCacheUserUseCase
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_exercise_8, container, false)
 
         view.apply {
@@ -51,8 +56,10 @@ class Exercise8Fragment : com.jordiee.coroutines.common.BaseFragment() {
                     fetchAndCacheUsersUseCase.fetchAndCacheUsers(userIds)
                     updateElapsedTimeJob.cancel()
                 } catch (e: CancellationException) {
-                    updateElapsedTimeJob.cancelAndJoin()
-                    txtElapsedTime.text = ""
+                    withContext(NonCancellable) {
+                        updateElapsedTimeJob.cancelAndJoin()
+                        txtElapsedTime.text = ""
+                    }
                 } finally {
                     btnFetch.isEnabled = true
                 }
@@ -70,12 +77,16 @@ class Exercise8Fragment : com.jordiee.coroutines.common.BaseFragment() {
 
 
     private suspend fun updateElapsedTime() {
-        val startTimeNano = System.nanoTime()
-        while (true) {
-            delay(100)
-            val elapsedTimeNano = System.nanoTime() - startTimeNano
-            val elapsedTimeMs = elapsedTimeNano / 1000000
-            txtElapsedTime.text = "Elapsed time: $elapsedTimeMs ms"
+        withContext(Dispatchers.Main) {
+            val startTimeNano = System.nanoTime()
+            while (true) {
+                delay(100)
+                val elapsedTimeNano = System.nanoTime() - startTimeNano
+                val elapsedTimeMs = elapsedTimeNano / 1000000
+                if (isActive) {
+                    txtElapsedTime.text = "Elapsed time: $elapsedTimeMs ms"
+                }
+            }
         }
     }
 
