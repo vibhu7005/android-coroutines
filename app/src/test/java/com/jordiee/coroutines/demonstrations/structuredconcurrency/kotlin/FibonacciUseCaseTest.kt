@@ -5,6 +5,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -16,14 +18,16 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.lang.Exception
 import kotlin.concurrent.thread
 import kotlin.coroutines.CoroutineContext
 
 class FibonacciUseCaseTest {
     lateinit var fibonacciUseCase: FibonacciUseCase
     lateinit var callback: FibonacciUseCase.Callback
-    var result : Int? = null
+    var result: Int? = null
     private val testCoroutineDispatcher = TestCoroutineDispatcher()
+
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setup() {
@@ -53,9 +57,10 @@ class FibonacciUseCaseTest {
     fun testCoroutineExceptionhandling() {
         runBlocking {
             val scopeJob = Job()
-            val exceptionhandling = CoroutineExceptionHandler { _: CoroutineContext, throwable: Throwable ->
-                println("exception handled $throwable")
-            }
+            val exceptionhandling =
+                CoroutineExceptionHandler { _: CoroutineContext, throwable: Throwable ->
+                    println("exception handled $throwable")
+                }
             val scope = CoroutineScope(scopeJob + exceptionhandling)
             val scope1 = scope.launch() {
                 delay(100)
@@ -69,6 +74,31 @@ class FibonacciUseCaseTest {
             println(scope)
             println(scope1)
             println(scope2)
+        }
+    }
+
+    @Test
+    fun coroutineExceptionhandlingForAsyncCase() {
+        runBlocking {
+            val scopeJob = SupervisorJob()
+            val scope = CoroutineScope(scopeJob)
+            val job = scope.async {
+                delay(20)
+                throw Exception("suspended")
+            }
+            val job2 = scope.launch {
+                delay(40)
+                println("job2 completed")
+            }
+            try {
+                job.await()
+            } catch (ex : Exception) {
+                println("exception $ex")
+            }
+            joinAll(job, job2)
+            println(scope)
+            println(job)
+            println(job2)
         }
     }
 }
