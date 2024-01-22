@@ -15,11 +15,13 @@ import com.jordiee.coroutines.demonstrations.uncaughtexception.LoggedInUser
 import com.jordiee.coroutines.demonstrations.uncaughtexception.LoginUseCaseUncaughtException
 import com.jordiee.coroutines.home.ScreenReachableFromHome
 import kotlinx.coroutines.*
-import java.lang.Exception
+import kotlin.coroutines.CoroutineContext
 
 class Exercise10Fragment : com.jordiee.coroutines.common.BaseFragment() {
-
-    private val coroutineScope = CoroutineScope(Dispatchers.Main.immediate)
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { coroutineContext: CoroutineContext, throwable: Throwable ->
+        Toast.makeText(context, throwable.message, Toast.LENGTH_SHORT).show()
+    }
+    private val coroutineScope = CoroutineScope(coroutineExceptionHandler + Dispatchers.Main.immediate + SupervisorJob())
 
     override val screenTitle get() = ScreenReachableFromHome.EXERCISE_10.description
 
