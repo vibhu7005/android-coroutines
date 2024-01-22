@@ -11,10 +11,10 @@ class FetchAndCacheUsersUseCase(
 
     suspend fun fetchAndCacheUsers(userIds: List<String>) = withContext(Dispatchers.Default) {
         for (userId in userIds) {
-//            launch {
+            launch {
                 val user = getUserEndpoint.getUser(userId)
                 usersDao.upsertUserInfo(user)
-//            }
+            }
         }
     }
 

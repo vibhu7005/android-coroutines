@@ -1,11 +1,18 @@
 package com.jordiee.coroutines.demonstrations.structuredconcurrency.kotlin
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withContext
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert
@@ -81,6 +88,27 @@ class FibonacciUseCaseAsyncUiCoroutinesTest {
             SUT.computeFibonacci(30, callback)
             // Assert
             assertThat(lastResult, `is`(BigInteger("832040")))
+        }
+    }
+
+    @Test
+    fun wrong_use_of_paralle_decomposition() {
+        runBlocking {
+            val job = CoroutineScope(Dispatchers.IO).launch {
+                val list = mutableListOf<Deferred<Int>>()
+                for (i in 1..100) {
+                    var count = 0
+                    list.add (async {
+                        ++count
+                    })
+                }
+                var sum = 0
+                for ( el in list) {
+                    sum += el.await()
+                }
+                println(sum)
+            }
+            job.join()
         }
     }
 }
