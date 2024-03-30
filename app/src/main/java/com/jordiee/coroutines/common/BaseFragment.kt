@@ -1,5 +1,6 @@
 package com.jordiee.coroutines.common
 
+import android.app.Fragment
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
